@@ -1,12 +1,28 @@
+# Table of Contents
++ [About this application](#about-this-application)
+  + [The Identity](#the-identity)
+  + [The Document Hash](#the-document-hash)
+  + [The Signed Identity](#the-signed-identity)
+  + [Sequence Diagram](#sequence-diagram)
++ [How to execute](#how-to-execute)
+  + [Environment Variables](#environment-variables)
+  + [Installing Dependencies](#installing-dependencies)
+  + [Running the app](#running-the-app)
+  + [Running tests](#running-tests)
+  + [Building the app](#building-the-app)
++ [Available Endpoints](#available-endpoints)
+  + [GET `/health`](#get-health)
+  + [POST `/identities/sign`](#post-identitiessign)
+
 # About this application
 
 This API will sign documents using the [ECDSA algorithm](https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm).
 
 The main concepts to understand this app are:
 
-1. [The `Identity`](#the-identity)
-2. [The `Document Hash`](#the-document-hash)
-3. [The `Signed Identity`](#the-signed-identity)
+1. [The Identity](#the-identity)
+2. [The Document Hash](#the-document-hash)
+3. [The Signed Identity](#the-signed-identity)
 
 ### The `Identity`
 
