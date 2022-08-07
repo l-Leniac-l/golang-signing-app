@@ -1,0 +1,18 @@
+### 404, identity not found
+POST http://localhost:8080/identities/sign
+Content-Type: application/json
+
+{
+    "identityId": "f54476b7-440a-41f3-b271-5d47aeecff35",
+    "documentHash": "5a9ed5765f61ba319f6a3eea81469a3a099b7433a87c96da0989b713a616c5ab67a3067f231bc0f99097ade53e0ac47d8e116436a734a18b074a626c3fee7afc"
+}
+
+### 200
+POST http://localhost:8080/identities/sign
+Content-Type: application/json
+
+{
+    "identityId": "f0b48033-dbb2-4bd5-b24d-8f8763e9461f",
+    "documentHash": "5a9ed5765f61ba319f6a3eea81469a3a099b7433a87c96da0989b713a616c5ab67a3067f231bc0f99097ade53e0ac47d8e116436a734a18b074a626c3fee7afc"
+}
+

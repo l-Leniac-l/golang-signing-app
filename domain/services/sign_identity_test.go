@@ -1,11 +1,12 @@
-package main
+package services
 
 import (
 	"crypto/sha512"
-	"strings"
 	"testing"
 
 	"github.com/joho/godotenv"
+	"github.com/l-leniac-l/golang-signing-app/domain/entities"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSignNoPrivateKey(t *testing.T) {
@@ -14,13 +15,13 @@ func TestSignNoPrivateKey(t *testing.T) {
 	h.Write([]byte("cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"))
 	hash := h.Sum(nil)
 
-	user := &User{
+	identity := &entities.Identity{
 		FirstName:   "John",
 		LastName:    "Doe",
 		DateOfBirth: "1995-03-15",
 	}
 
-	si := NewSignIdentity(user, hash)
+	si := NewSignIdentity(identity, hash)
 
 	_, err := si.Sign()
 
@@ -28,13 +29,11 @@ func TestSignNoPrivateKey(t *testing.T) {
 
 	want := "failed to load private key"
 
-	if got != want {
-		t.Errorf("got %s, wanted %s", got, want)
-	}
+	assert.Equal(t, want, got)
 }
 
-func TestSign(t *testing.T) {
-	envMap, _ := godotenv.Read()
+func TestSignSuccess(t *testing.T) {
+	envMap, _ := godotenv.Read("../../.env")
 
 	for k, v := range envMap {
 		t.Setenv(k, v)
@@ -44,36 +43,30 @@ func TestSign(t *testing.T) {
 	h.Write([]byte("cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"))
 	hash := h.Sum(nil)
 
-	user := &User{
+	identity := &entities.Identity{
 		FirstName:   "John",
 		LastName:    "Doe",
 		DateOfBirth: "1995-03-15",
 	}
 
-	si := NewSignIdentity(user, hash)
+	si := NewSignIdentity(identity, hash)
 
 	sign, err := si.Sign()
 
-	if err != nil {
-		t.Errorf("error while signing document: %s", err)
-	}
-
-	if sign != si.signature {
-		t.Errorf("got %s, wanted %s", sign, si.signature)
+	if assert.NoError(t, err) {
+		assert.Equal(t, sign, si.Signature)
 	}
 }
 
 func TestSetSignature(t *testing.T) {
 	si := SignIdentity{}
 
-	si.SetSignature("test")
+	si.SetSignature("MEUCIQC+iyknVMK3L58jjTikEotji7n5bXVTHMTQpDxBNqb4BwIgH3btjoj4dCG6EKRS4zpeUDMF3GbFiqo9vVutVTkTZI0=")
 
-	got := si.signature
-	want := "test"
+	got := si.Signature
+	want := "MEUCIQC+iyknVMK3L58jjTikEotji7n5bXVTHMTQpDxBNqb4BwIgH3btjoj4dCG6EKRS4zpeUDMF3GbFiqo9vVutVTkTZI0="
 
-	if got != want {
-		t.Errorf("got %s, wanted %s", got, want)
-	}
+	assert.Equal(t, want, got)
 }
 
 func TestValidateNoPublicKey(t *testing.T) {
@@ -89,13 +82,11 @@ func TestValidateNoPublicKey(t *testing.T) {
 
 	want := "failed to load public key"
 
-	if got != want {
-		t.Errorf("got %s, wanted %s", got, want)
-	}
+	assert.Equal(t, want, got)
 }
 
 func TestValidateBadSignature(t *testing.T) {
-	envMap, _ := godotenv.Read()
+	envMap, _ := godotenv.Read("../../.env")
 
 	for k, v := range envMap {
 		t.Setenv(k, v)
@@ -106,13 +97,13 @@ func TestValidateBadSignature(t *testing.T) {
 	h.Write([]byte("cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"))
 	hash := h.Sum(nil)
 
-	user := &User{
+	identity := &entities.Identity{
 		FirstName:   "John",
 		LastName:    "Doe",
 		DateOfBirth: "1995-03-15",
 	}
 
-	si := NewSignIdentity(user, hash)
+	si := NewSignIdentity(identity, hash)
 
 	sign := "MEUCIQC+iyknVMK3L58jjTikEotji7n5bXVTHMTQpDxBNqb4BwIgH3btjoj4dCG6EKRS4zpeUDMF3GbFiqo9vVutVTZI0="
 
@@ -124,12 +115,10 @@ func TestValidateBadSignature(t *testing.T) {
 
 	want := "illegal base64"
 
-	if !strings.Contains(got, want) {
-		t.Errorf("got %s, wanted %s", got, want)
-	}
+	assert.Contains(t, got, want)
 }
-func TestValidate(t *testing.T) {
-	envMap, _ := godotenv.Read()
+func TestValidateSuccess(t *testing.T) {
+	envMap, _ := godotenv.Read("../../.env")
 
 	for k, v := range envMap {
 		t.Setenv(k, v)
@@ -139,13 +128,13 @@ func TestValidate(t *testing.T) {
 	h.Write([]byte("cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"))
 	hash := h.Sum(nil)
 
-	user := &User{
+	identity := &entities.Identity{
 		FirstName:   "John",
 		LastName:    "Doe",
 		DateOfBirth: "1995-03-15",
 	}
 
-	si := NewSignIdentity(user, hash)
+	si := NewSignIdentity(identity, hash)
 
 	sign := "MEUCIQC+iyknVMK3L58jjTikEotji7n5bXVTHMTQpDxBNqb4BwIgH3btjoj4dCG6EKRS4zpeUDMF3GbFiqo9vVutVTkTZI0="
 
@@ -153,7 +142,5 @@ func TestValidate(t *testing.T) {
 
 	valid, _ := si.Validate()
 
-	if valid != true {
-		t.Errorf("got %v, wanted %v", valid, true)
-	}
+	assert.Equal(t, true, valid)
 }
